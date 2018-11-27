@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "10.11"
+
+
+jobs:
+  include:
+    - stage: test
+      name: Units and integration tests
+      script: npm test
