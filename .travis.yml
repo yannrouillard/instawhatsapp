@@ -8,3 +8,7 @@ jobs:
     - stage: test
       name: Units and integration tests
       script: npm test
+
+    - stage: test
+      name: Security tests
+      script: npm audit

@@ -2,6 +2,8 @@ Instawhatsapp
 =============
 
 [![Build Status](https://travis-ci.org/yannrouillard/instawhatsapp.svg?branch=master)](https://travis-ci.org/yannrouillard/instawhatsapp)
+[![Known Vulnerabilities](https://snyk.io/test/github/yannrouillard/instawhatsapp/badge.svg)](https://snyk.io/test/github/yannrouillard/instawhatsapp)
+
 
 A CLI tool that forwards your Instagram posts to one or more Whatsapp groups.
 
