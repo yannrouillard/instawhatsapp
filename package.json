@@ -22,7 +22,8 @@
   },
   "resolutions": {
     "instagram-private-api/tough-cookie-filestore/tough-cookie": "^2.3.3",
-    "instagram-private-api/request-promise": "^4.2.2"
+    "instagram-private-api/request-promise": "^4.2.2",
+    "terminal-image/term-img/iterm2-version/plist": "^3.0.1"
   },
   "devDependencies": {
     "eslint": "^5.7.0",
