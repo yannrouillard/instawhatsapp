@@ -34,10 +34,14 @@
     "jest-mock-object": "^2.1.2",
     "jest-plugin-fs": "^2.9.0",
     "memfs": "^2.14.0",
-    "nock": "^10.0.2"
+    "nock": "^10.0.2",
+    "release-it": "^8.2.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "bump-version": "release-it --no-github.release",
+    "release": "release-it --github.release",
+    "ci-release": "release-it --no-requireUpstream --no-increment --no-src.commit --no-src.tag --no-src.push --github.release"
   },
   "author": "Yann Rouillard <yann@pleiades.fr.eu.org>",
   "license": "ISC",

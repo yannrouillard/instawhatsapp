@@ -1,0 +1,6 @@
+{
+  "non-interactive": true,
+  "npm": {
+    "publish": false
+  }
+}

@@ -19,3 +19,13 @@ jobs:
     - stage: test
       name: Security tests
       script: yarn audit
+
+    - stage: deploy
+      if: tag IS present
+      script: skip
+      deploy:
+        skip_cleanup: true
+        provider: script
+        script: yarn run ci-release
+        on:
+          tags: true
