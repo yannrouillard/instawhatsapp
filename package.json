@@ -38,6 +38,7 @@
     "release-it": "^8.2.0"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "jest",
     "bump-version": "release-it --no-github.release",
     "release": "release-it --github.release",

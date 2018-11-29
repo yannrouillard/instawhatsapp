@@ -13,6 +13,10 @@ before_install:
 jobs:
   include:
     - stage: test
+      name: Linting
+      script: yarn run lint
+
+    - stage: test
       name: Units and integration tests
       script: yarn test
 
