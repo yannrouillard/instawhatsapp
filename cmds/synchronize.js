@@ -8,7 +8,7 @@ const ellipsis = require('text-ellipsis');
 const SynchronisationState = require('../lib/synchronization-state');
 const InstagramClient = require('../lib/instagram');
 const WhatsAppClient = require('../lib/whatsapp');
-const CredentialsDb = require('../lib/credentials-db');
+const { CredentialsDb } = require('../lib/credentials-db');
 const downloadImage = require('../lib/download-image');
 const oneByOne = require('../lib/one-by-one');
 
