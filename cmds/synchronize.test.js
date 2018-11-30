@@ -107,23 +107,13 @@ test('synchronize starts from the last synchronisation timestamp', async () => {
 
 test('synchronize shutdown the client afterward', async () => {
   // Given
-  const lastTimestamp = 6;
-  const postsCount = 10;
-
   const synchronizeOptions = DEFAULT_SYNCHRONIZE_OPTIONS;
   CredentialsDbInitializedWith(synchronizeOptions);
-  instagramApi.configuredWith({ postsCount });
-
-  const { instagramAccount, whatsAppGroup, syncStateFolder } = synchronizeOptions;
-  const synchroState = new SynchronizationState(instagramAccount, whatsAppGroup, syncStateFolder);
-  await synchroState.update({ timestamp: lastTimestamp }).saveToDisk();
+  instagramApi.configuredWith({ postsCount: 1 });
 
   // When
   await synchronize.handler(synchronizeOptions);
 
   // Then
-  const sentMedia = WhatsAppClient.mediaSentByGroup[synchronizeOptions.whatsAppGroup];
-  const olderThanLastTimestamp = media => parseInt(media.comment.replace('caption ', ''), 10) > lastTimestamp;
-  expect(sentMedia.every(olderThanLastTimestamp)).toEqual(true);
-  expect(sentMedia.length).toEqual(postsCount - lastTimestamp);
+  expect(WhatsAppClient.shutdown).toBe(true);
 });
