@@ -41,7 +41,7 @@
   },
   "scripts": {
     "lint": "eslint . && jsinspect",
-    "test": "jest",
+    "test": "jest --coverage",
     "bump-version": "release-it --no-github.release",
     "release": "release-it --github.release",
     "ci-release": "release-it --no-requireUpstream --no-increment --no-src.commit --no-src.tag --no-src.push --github.release"

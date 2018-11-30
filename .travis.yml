@@ -5,6 +5,7 @@ node_js:
 env:
   global:
     - YARN_VERSION="1.12.3"
+    - CC_TEST_REPORTER_ID=8fbd4a6d8ebe0a06c95166ff82b412fa7da0ddf72ea7f89a094edc40152325a0
 
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version ${YARN_VERSION}
@@ -18,7 +19,14 @@ jobs:
 
     - stage: test
       name: Units and integration tests
-      script: yarn test
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+      script:
+        - yarn test
+      after_script:
+        - ./cc-test-reporter after-build --exit-code ${TRAVIS_TEST_RESULT}
 
     - stage: test
       name: Security tests
