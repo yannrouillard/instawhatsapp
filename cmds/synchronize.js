@@ -1,5 +1,6 @@
 const path = require('path');
 
+const _ = require('lodash');
 const chrono = require('chrono-node');
 const moment = require('moment');
 const ellipsis = require('text-ellipsis');
@@ -11,8 +12,32 @@ const CredentialsDb = require('../lib/credentials-db');
 const downloadImage = require('../lib/download-image');
 const oneByOne = require('../lib/one-by-one');
 
+/* ****************************************************************************
+ * Helper functions
+ *************************************************************************** */
+
+const passThrough = async posts => posts;
+
+const logPostsFound = async (posts) => {
+  console.log(`${posts.length} posts found to be published`);
+  return posts;
+};
+
 const downloadPostImages = post => Promise.all(post.mediaUrls.map(downloadImage));
 
+const sendOnePostToWhatsApp = async (post, whatsAppClient, whatsAppGroup, options = {}) => {
+  if (!options.quiet) {
+    console.log(`Uploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format('LLLL')}`);
+  }
+  if (options.dryRun) return;
+  const comment = post.title + (post.location ? ` [${post.location}]` : '');
+  const imagesPaths = await downloadPostImages(post);
+  await whatsAppClient.sendMedia(whatsAppGroup, imagesPaths, comment);
+};
+
+/* ****************************************************************************
+ * Public functions
+ *************************************************************************** */
 
 module.exports = {
   command: 'sync <instagramAccount> <whatsAppAccount> <whatsAppGroup>',
@@ -54,27 +79,12 @@ module.exports = {
     await synchroState.loadFromDisk();
     const since = argv.since || synchroState.lastTimestamp;
 
-    const logPostsFound = async (posts) => {
-      if (!argv.quiet) {
-        console.log(`${posts.length} posts found to be published`);
-      }
-      return posts;
-    };
-
-    const sendOnePost = async (post) => {
-      if (!argv.quiet) {
-        console.log(`Uploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format('LLLL')}`);
-      }
-      if (argv.dryRun) return;
-      const comment = post.title + (post.location ? ` [${post.location}]` : '');
-      const imagesPaths = await downloadPostImages(post);
-      await whatsAppClient.sendMedia(whatsAppGroup, imagesPaths, comment);
-      await synchroState.update(post).saveToDisk();
-    };
+    const sendOnePost = _.partialRight(sendOnePostToWhatsApp, whatsAppClient, whatsAppGroup, argv);
+    const withStateSave = synchroState.withSaveState.bind(synchroState);
 
     return instagramClient.getPosts(since, argv.max)
-      .then(logPostsFound)
-      .then(oneByOne(sendOnePost))
+      .then(argv.quiet ? logPostsFound : passThrough)
+      .then(oneByOne(withStateSave(sendOnePost)))
       .finally(() => whatsAppClient.shutdown());
   },
 };
