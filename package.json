@@ -5,8 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "appdata-path": "^1.0.0",
+    "auto-bind": "^1.2.1",
     "chrome-launcher": "^0.10.4",
     "chrono-node": "^1.3.5",
+    "del": "^3.0.0",
     "download": "^7.1.0",
     "instagram-private-api": "^0.6.8",
     "lodash": "^4.17.11",
@@ -32,11 +34,13 @@
     "eslint-plugin-jest": "^22.1.0",
     "eslint-plugin-sonarjs": "^0.2.0",
     "jest": "^23.6.0",
+    "jest-extended": "^0.11.0",
     "jest-mock-object": "^2.1.2",
     "jest-plugin-fs": "^2.9.0",
     "jsinspect": "^0.12.7",
     "memfs": "^2.14.0",
     "nock": "^10.0.2",
+    "prettier": "^1.15.3",
     "release-it": "^8.2.0"
   },
   "scripts": {
@@ -45,6 +49,9 @@
     "bump-version": "release-it --no-github.release",
     "release": "release-it --github.release",
     "ci-release": "release-it --no-requireUpstream --no-increment --no-src.commit --no-src.tag --no-src.push --github.release"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "jest-extended"
   },
   "author": "Yann Rouillard <yann@pleiades.fr.eu.org>",
   "license": "ISC",

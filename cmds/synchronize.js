@@ -1,38 +1,52 @@
-const path = require('path');
-
-const _ = require('lodash');
 const chrono = require('chrono-node');
-const moment = require('moment');
 const ellipsis = require('text-ellipsis');
+const moment = require('moment');
 
-const SynchronisationState = require('../lib/synchronization-state');
-const InstagramClient = require('../lib/instagram');
-const WhatsAppClient = require('../lib/whatsapp');
-const { CredentialsDb } = require('../lib/credentials-db');
-const downloadImage = require('../lib/download-image');
-const oneByOne = require('../lib/one-by-one');
+const SynchronisationStateDb = require('../lib/infrastructure/synchronization-state-db');
+const InstagramFeedFactory = require('../lib/infrastructure/instagram-feed-factory');
+const WhatsAppFeedFactory = require('../lib/infrastructure/whatsapp-feed-factory');
+const { CredentialsDb } = require('../lib/infrastructure/credentials-db');
+const MediaFeedInfo = require('../lib/media-feed-info');
+const MediaFeedsSynchronizer = require('../lib/media-feeds-synchronizer');
 
 /* ****************************************************************************
  * Helper functions
  *************************************************************************** */
 
-const passThrough = async posts => posts;
+const logMediaPostsFound = posts => console.log(`${posts.length} posts found to be published`);
 
-const logPostsFound = async (posts) => {
-  console.log(`${posts.length} posts found to be published`);
-  return posts;
+const logSendingMediaPost = (post) => {
+  console.log(
+    `Uploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format(
+      'LLLL',
+    )}`,
+  );
 };
 
-const downloadPostImages = post => Promise.all(post.mediaUrls.map(downloadImage));
-
-const sendOnePostToWhatsApp = async (post, whatsAppClient, whatsAppGroup, options = {}) => {
-  if (!options.quiet) {
-    console.log(`Uploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format('LLLL')}`);
+const initCredentialsDb = (argv) => {
+  const credentialsDb = new CredentialsDb(argv.whatsAppDataFolder);
+  if (argv.instagramPassword) {
+    credentialsDb.setEphemeralPassword(argv.instagramAccount, argv.instagramPassword);
   }
-  if (options.dryRun) return;
-  const comment = post.title + (post.location ? ` [${post.location}]` : '');
-  const imagesPaths = await downloadPostImages(post);
-  await whatsAppClient.sendMedia(whatsAppGroup, imagesPaths, comment);
+  return credentialsDb;
+};
+
+const createMediaPostsSynchronizer = (argv) => {
+  const credentialsDb = initCredentialsDb(argv);
+  const instagramFeedFactory = new InstagramFeedFactory(credentialsDb);
+
+  const synchroStateDb = new SynchronisationStateDb(argv.syncStateFolder);
+  const whatsAppFeedFactory = new WhatsAppFeedFactory(
+    argv.whatsAppDataFolder,
+    argv.googleChromePath,
+    argv.headless,
+  );
+
+  return new MediaFeedsSynchronizer({
+    sourceFeedFactory: instagramFeedFactory,
+    targetFeedFactory: whatsAppFeedFactory,
+    synchroStateDb,
+  });
 };
 
 /* ****************************************************************************
@@ -46,6 +60,7 @@ module.exports = {
   builder: {
     'dry-run': {
       describe: 'Only show what posts would be synchronized',
+      type: 'boolean',
     },
     'instagram-password': {
       describe: 'Instagram account password',
@@ -63,28 +78,24 @@ module.exports = {
   },
 
   handler: async (argv) => {
-    const { instagramAccount, whatsAppGroup } = argv;
-    const { whatsAppAccount, googleChromePath, whatsAppDataFolder, headless } = argv;
-    const syncStateFolder = argv.syncStateFolder || path.join(argv.whatsAppDataFolder, 'synchroStates');
+    const mediaPostsSynchronizer = createMediaPostsSynchronizer(argv);
 
-    const credentialsDb = new CredentialsDb(argv.whatsAppDataFolder);
-    const instagramPassword = argv.instagramPassword || credentialsDb.getPassword(instagramAccount);
+    if (!argv.quiet) {
+      mediaPostsSynchronizer.on('mediaPostsFound', logMediaPostsFound);
+      mediaPostsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
+    }
 
-    const synchroState = new SynchronisationState(instagramAccount, whatsAppGroup, syncStateFolder);
-    const instagramClient = new InstagramClient(instagramAccount, instagramPassword);
-    const whatsAppClient = new WhatsAppClient({
-      whatsAppAccount, googleChromePath, whatsAppDataFolder, headless,
+    const synchroOptions = { max: argv.max, since: argv.since, dryRun: argv.dryRun };
+    const instagramFeedInfo = new MediaFeedInfo({ account: argv.instagramAccount });
+    const whatsAppFeedInfo = new MediaFeedInfo({
+      account: argv.whatsAppAccount,
+      name: argv.whatsAppGroup,
     });
 
-    await synchroState.loadFromDisk();
-    const since = argv.since || synchroState.lastTimestamp;
-
-    const sendOnePost = _.partialRight(sendOnePostToWhatsApp, whatsAppClient, whatsAppGroup, argv);
-    const withStateSave = synchroState.withSaveState.bind(synchroState);
-
-    return instagramClient.getPosts(since, argv.max)
-      .then(argv.quiet ? logPostsFound : passThrough)
-      .then(oneByOne(withStateSave(sendOnePost)))
-      .finally(() => whatsAppClient.shutdown());
+    await mediaPostsSynchronizer.synchronizeMediaFeeds({
+      sourceFeedInfo: instagramFeedInfo,
+      targetFeedInfo: whatsAppFeedInfo,
+      options: synchroOptions,
+    });
   },
 };

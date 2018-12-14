@@ -4,26 +4,34 @@ const loudRejection = require('loud-rejection');
 const yargs = require('yargs');
 const { getAppDataPath } = require('appdata-path');
 
-const findGoogleChrome = require('./lib/google-chrome-finder');
+const findGoogleChrome = require('./lib/helpers/google-chrome-finder');
 const authorizeCmd = require('./cmds/authorize');
 const synchronizeCmd = require('./cmds/synchronize');
 
 const APPLICATION_NAME = 'instawhatsapp';
+const APPLICATION_FOLDER = getAppDataPath(APPLICATION_NAME);
+
 
 loudRejection();
 
 const commonOptions = {
-  'no-headless': {
-    describe: 'Display the Google Chrome window used to run WhatsApp Web client',
+  headless: {
+    describe: 'Hide the Google Chrome window used to run WhatsApp Web client',
+    type: 'boolean',
+    default: true,
   },
   'google-chrome-path': {
     describe: 'Path to Google Chrome executable',
     type: 'string',
     default: findGoogleChrome,
   },
+  'sync-state-folder': {
+    hidden: true,
+    default: path.join(APPLICATION_FOLDER, 'synchroStates'),
+  },
   'whats-app-data-folder': {
     hidden: true,
-    default: path.join(getAppDataPath(APPLICATION_NAME), 'whatsapp'),
+    default: path.join(APPLICATION_FOLDER, 'whatsapp'),
   },
 };
 
@@ -34,4 +42,5 @@ yargs
   .command(authorizeCmd)
   .demandCommand()
   .help()
+  .strict()
   .argv;
