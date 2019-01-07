@@ -5,8 +5,11 @@ const SynchronisationStateDb = require('../lib/infrastructure/synchronization-st
 const InstagramFeedFactory = require('../lib/infrastructure/instagram-feed-factory');
 const WhatsAppFeedFactory = require('../lib/infrastructure/whatsapp-feed-factory');
 const { CredentialsDb } = require('../lib/infrastructure/credentials-db');
-const MediaFeedInfo = require('../lib/media-feed-info');
 const MediaFeedsSynchronizer = require('../lib/media-feeds-synchronizer');
+const asyncSequentialMap = require('../lib/helpers/async-sequential-map');
+
+const syncEntryReader = require('../lib/infrastructure/sync-entry-reader');
+
 
 /* ****************************************************************************
  * Helper functions
@@ -22,24 +25,19 @@ const logSendingMediaPost = (post) => {
   );
 };
 
-const initCredentialsDb = (argv) => {
+const buildMediaFeedsSynchronizer = (argv) => {
   const credentialsDb = new CredentialsDb(argv.whatsAppDataFolder);
   if (argv.instagramPassword) {
     credentialsDb.setEphemeralPassword(argv.instagramAccount, argv.instagramPassword);
   }
-  return credentialsDb;
-};
 
-const createMediaPostsSynchronizer = (argv) => {
-  const credentialsDb = initCredentialsDb(argv);
   const instagramFeedFactory = new InstagramFeedFactory(credentialsDb);
-
-  const synchroStateDb = new SynchronisationStateDb(argv.syncStateFolder);
   const whatsAppFeedFactory = new WhatsAppFeedFactory(
     argv.whatsAppDataFolder,
     argv.googleChromePath,
     argv.headless,
   );
+  const synchroStateDb = new SynchronisationStateDb(argv.syncStateFolder);
 
   return new MediaFeedsSynchronizer({
     sourceFeedFactory: instagramFeedFactory,
@@ -48,30 +46,43 @@ const createMediaPostsSynchronizer = (argv) => {
   });
 };
 
+const getMediaFeedsSyncListFromFile = async syncListFile => (
+  syncEntryReader.readEntriesFromFile(syncListFile)
+);
+
+const getMediaFeedsSyncListFromArgs = (argv) => {
+  const accountInfo = {
+    instagramAccount: argv.instagramAccount,
+    whatsAppAccount: argv.whatsAppAccount,
+    whatsAppGroup: argv.whatsAppGroup,
+  };
+  return [syncEntryReader.readEntryFromAccountInfo(accountInfo)];
+};
+
 /* ****************************************************************************
- * Helper functions
+ * Public functions
  *************************************************************************** */
 
 const synchronizeHandler = async (argv) => {
-  const mediaPostsSynchronizer = createMediaPostsSynchronizer(argv);
+  const mediaFeedsSynchronizer = buildMediaFeedsSynchronizer(argv);
 
   if (!argv.quiet) {
-    mediaPostsSynchronizer.on('mediaPostsFound', logMediaPostsFound);
-    mediaPostsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
+    mediaFeedsSynchronizer.on('mediaPostsFound', logMediaPostsFound);
+    mediaFeedsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
   }
 
   const synchroOptions = { max: argv.max, since: argv.since, dryRun: argv.dryRun };
-  const instagramFeedInfo = new MediaFeedInfo({ account: argv.instagramAccount });
-  const whatsAppFeedInfo = new MediaFeedInfo({
-    account: argv.whatsAppAccount,
-    name: argv.whatsAppGroup,
-  });
+  const mediaFeedsSyncList = argv.syncListFile
+    ? await getMediaFeedsSyncListFromFile(argv.syncListFile)
+    : getMediaFeedsSyncListFromArgs(argv);
 
-  await mediaPostsSynchronizer.synchronizeMediaFeeds({
-    sourceFeedInfo: instagramFeedInfo,
-    targetFeedInfo: whatsAppFeedInfo,
+  const runMediaFeedsSynchro = async syncEntry => mediaFeedsSynchronizer.synchronizeMediaFeeds({
+    sourceFeedInfo: syncEntry.sourceFeedInfo,
+    targetFeedInfo: syncEntry.targetFeedInfo,
     options: synchroOptions,
   });
+
+  await asyncSequentialMap(mediaFeedsSyncList, runMediaFeedsSynchro);
 };
 
 module.exports = synchronizeHandler;

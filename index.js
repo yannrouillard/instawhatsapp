@@ -9,6 +9,7 @@ const { getAppDataPath } = require('appdata-path');
 const findGoogleChrome = require('./lib/helpers/google-chrome-finder');
 const authorizeCmd = require('./cmds/authorize');
 const synchronizeCmd = require('./cmds/synchronize');
+const synchronizeFromFileCmd = require('./cmds/synchronize-from-file');
 
 const APPLICATION_NAME = 'instawhatsapp';
 const APPLICATION_FOLDER = getAppDataPath(APPLICATION_NAME);
@@ -41,6 +42,7 @@ const commonOptions = {
 yargs
   .options(commonOptions)
   .command(synchronizeCmd)
+  .command(synchronizeFromFileCmd)
   .command(authorizeCmd)
   .demandCommand()
   .help()
