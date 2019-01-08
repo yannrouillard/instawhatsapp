@@ -15,11 +15,20 @@ const syncEntryReader = require('../lib/infrastructure/sync-entry-reader');
  * Helper functions
  *************************************************************************** */
 
-const logMediaPostsFound = posts => console.log(`${posts.length} posts found to be published`);
+const logSynchronizationStarting = (sourceFeedInfo, targetFeedInfo) => {
+  console.log(`Starting synchronizing Instagram account "${sourceFeedInfo.account}"`
+    + ` to WhatsApp account "${targetFeedInfo.account}" / group "${targetFeedInfo.name}"`);
+};
+
+const logSynchronizationFinished = () => {
+  console.log();
+};
+
+const logMediaPostsFound = posts => console.log(`\t${posts.length} posts found to be published`);
 
 const logSendingMediaPost = (post) => {
   console.log(
-    `Uploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format(
+    `\tUploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format(
       'LLLL',
     )}`,
   );
@@ -67,6 +76,8 @@ const synchronizeHandler = async (argv) => {
   const mediaFeedsSynchronizer = buildMediaFeedsSynchronizer(argv);
 
   if (!argv.quiet) {
+    mediaFeedsSynchronizer.on('synchronizationStarting', logSynchronizationStarting);
+    mediaFeedsSynchronizer.on('synchronizationFinished', logSynchronizationFinished);
     mediaFeedsSynchronizer.on('mediaPostsFound', logMediaPostsFound);
     mediaFeedsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
   }
