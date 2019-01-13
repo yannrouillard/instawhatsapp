@@ -82,7 +82,7 @@ const synchronizeHandler = async (argv) => {
     mediaFeedsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
   }
 
-  const synchroOptions = { max: argv.max, since: argv.since, dryRun: argv.dryRun };
+  const synchroOptions = { skip: argv.skip, max: argv.max, since: argv.since, dryRun: argv.dryRun };
   const mediaFeedsSyncList = argv.syncListFile
     ? await getMediaFeedsSyncListFromFile(argv.syncListFile)
     : getMediaFeedsSyncListFromArgs(argv);

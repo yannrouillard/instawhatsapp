@@ -16,6 +16,10 @@ module.exports = {
       describe: 'Instagram account password',
       type: 'string',
     },
+    skip: {
+      describe: 'Skip the given number of posts',
+      type: 'number',
+    },
     max: {
       describe: 'Maximum number of posts to synchronize',
       type: 'number',

@@ -12,6 +12,10 @@ module.exports = {
       describe: 'Only show what posts would be synchronized',
       type: 'boolean',
     },
+    skip: {
+      describe: 'Skip the given number of posts',
+      type: 'number',
+    },
     max: {
       describe: 'Maximum number of posts to synchronize',
       type: 'number',
