@@ -20,7 +20,8 @@
     "text-ellipsis": "^1.0.3",
     "tmp-promise": "^1.0.5",
     "util": "^0.11.0",
-    "yargs": "^12.0.2"
+    "yargs": "^12.0.2",
+    "snyk": "^1.189.0"
   },
   "resolutions": {
     "instagram-private-api/tough-cookie-filestore/tough-cookie": "^2.3.3",
@@ -48,7 +49,9 @@
     "test": "jest --coverage",
     "bump-version": "release-it --no-github.release",
     "release": "release-it --github.release",
-    "ci-release": "release-it --no-requireUpstream --no-increment --no-src.commit --no-src.tag --no-src.push --github.release"
+    "ci-release": "release-it --no-requireUpstream --no-increment --no-src.commit --no-src.tag --no-src.push --github.release",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "bin": {
     "instawhatsapp": "./index.js"
@@ -58,5 +61,6 @@
   },
   "author": "Yann Rouillard <yann@pleiades.fr.eu.org>",
   "license": "ISC",
-  "repository": "git@github.com:yannrouillard/instawhatsapp.git"
+  "repository": "git@github.com:yannrouillard/instawhatsapp.git",
+  "snyk": true
 }
