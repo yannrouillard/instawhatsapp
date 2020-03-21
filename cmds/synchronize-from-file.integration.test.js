@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { vol } = require('memfs');
 
-const instagramPrivateApiMock = require('instagram-private-api').V1;
+const instagramPrivateApiMock = require('instagram-private-api');
 const WhatsAppFeedFactory = require('../lib/infrastructure/whatsapp-feed-factory');
 const MediaFeedInfo = require('../lib/media-feed-info');
 

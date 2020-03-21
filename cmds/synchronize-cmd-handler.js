@@ -28,9 +28,9 @@ const logMediaPostsFound = posts => console.log(`\t${posts.length} posts found t
 
 const logSendingMediaPost = (post) => {
   console.log(
-    `\tUploading post "${ellipsis(post.title, 40)}" published on ${moment(post.timestamp).format(
-      'LLLL',
-    )}`,
+    `\tUploading post "${ellipsis(post.title, 40)}" published on ${moment
+      .unix(post.timestamp)
+      .format('LLLL')}`,
   );
 };
 
@@ -82,7 +82,13 @@ const synchronizeHandler = async (argv) => {
     mediaFeedsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
   }
 
-  const synchroOptions = { skip: argv.skip, max: argv.max, since: argv.since, dryRun: argv.dryRun };
+  const sinceAsTimestamp = argv.since ? moment(argv.since).unix() : 0;
+  const synchroOptions = {
+    skip: argv.skip,
+    max: argv.max,
+    since: sinceAsTimestamp,
+    dryRun: argv.dryRun,
+  };
   const mediaFeedsSyncList = argv.syncListFile
     ? await getMediaFeedsSyncListFromFile(argv.syncListFile)
     : getMediaFeedsSyncListFromArgs(argv);

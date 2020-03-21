@@ -20,6 +20,11 @@ const mediaTypeIds = {
   carousel: 8,
 };
 
+const mediaFieldByType = {
+  images: 'image_versions2',
+  videos: 'video_versions2',
+};
+
 /* ****************************************************************************
  * Private functions
  *************************************************************************** */
@@ -33,8 +38,10 @@ const buildFakeImageOrVideoMedia = ({ postId, mediaType, mediaIdx = 1, resCount 
 
 const buildFakeCarouselMedia = ({ postId, mediaIdx, resCount }) => {
   const mediaType = alternateImageAndVideo(mediaIdx);
-  const media = { _params: { mediaType: mediaTypeIds[mediaType] } };
-  media._params[mediaType] = buildFakeImageOrVideoMedia({ postId, mediaType, mediaIdx, resCount });
+  const media = { media_type: mediaTypeIds[mediaType] };
+  media[mediaFieldByType[mediaType]] = {
+    candidates: buildFakeImageOrVideoMedia({ postId, mediaType, mediaIdx, resCount }),
+  };
   return media;
 };
 
@@ -44,24 +51,24 @@ const buildFakeInstagramPost = (postId, options = {}) => {
   const resCount = options.multiResolutions ? _.random(2, 10) : 1;
 
   const fakePost = {
-    _params: {
-      caption: `caption ${postId}`,
-      mediaType: mediaTypeIds[type],
-      takenAt: postId,
+    caption: {
+      text: `caption ${postId}`,
     },
+    media_type: mediaTypeIds[type],
+    taken_at: postId,
     location: {
-      _params: {
-        name: `location ${postId}`,
-      },
+      name: `location ${postId}`,
     },
   };
 
   if (type === 'carousel') {
-    fakePost._params.carouselMedia = _.range(1, carouselCount + 1).map(
-      mediaIdx => buildFakeCarouselMedia({ postId, mediaIdx, resCount }),
+    fakePost.carousel_media = _.range(1, carouselCount + 1).map(mediaIdx =>
+      buildFakeCarouselMedia({ postId, mediaIdx, resCount }),
     );
   } else {
-    fakePost._params[type] = buildFakeImageOrVideoMedia({ postId, mediaType: type, resCount });
+    fakePost[mediaFieldByType[type]] = {
+      candidates: buildFakeImageOrVideoMedia({ postId, mediaType: type, resCount }),
+    };
   }
 
   return fakePost;
@@ -82,7 +89,7 @@ const configuredWith = (options) => {
     .get(MEDIA_PATH_RE)
     .reply(200, 'fakeContent');
 
-  instagramApiMock.V1.Feed.UserMedia.mockImplementation(() => {
+  instagramApiMock.IgApiClient.mockImplementation(() => {
     const { postsCount = 10, chunkSize = 0, multiResolutions, carouselCount, type } = options;
 
     const posts = _.chunk(
@@ -91,14 +98,26 @@ const configuredWith = (options) => {
     );
 
     return {
-      get: async () => posts.shift(),
-      isMoreAvailable: () => posts.length !== 0,
+      state: {
+        generateDevice: () => undefined,
+      },
+      account: {
+        login: username => username,
+      },
+      feed: {
+        user: () => {
+          return {
+            items: async () => posts.shift(),
+            isMoreAvailable: () => posts.length !== 0,
+          };
+        },
+      },
     };
   });
 };
 
 const reset = () => {
-  instagramApiMock.V1.Feed.UserMedia.mockReset();
+  instagramApiMock.IgApiClient.mockReset();
   nock.removeInterceptor({
     hostname: FAKE_MEDIA_HOSTNAME,
     proto: FAKE_MEDIA_PROTO,
@@ -106,7 +125,7 @@ const reset = () => {
   });
 };
 
-Object.assign(instagramApiMock.V1, {
+Object.assign(instagramApiMock, {
   buildFakeInstagramPosts,
   configuredWith,
   reset,
