@@ -14,7 +14,6 @@ const synchronizeFromFileCmd = require('./cmds/synchronize-from-file');
 const APPLICATION_NAME = 'instawhatsapp';
 const APPLICATION_FOLDER = getAppDataPath(APPLICATION_NAME);
 
-
 loudRejection();
 
 const commonOptions = {
@@ -46,5 +45,4 @@ yargs
   .command(authorizeCmd)
   .demandCommand()
   .help()
-  .strict()
-  .argv;
+  .strict().argv;

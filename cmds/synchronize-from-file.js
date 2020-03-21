@@ -2,7 +2,6 @@ const chrono = require('chrono-node');
 
 const synchronizeCommandHandler = require('./synchronize-cmd-handler');
 
-
 module.exports = {
   command: 'sync-from-file <syncListFile>',
   describe: 'Synchronize Instagram posts with the WhatsApp group',

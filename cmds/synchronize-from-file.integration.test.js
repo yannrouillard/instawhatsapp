@@ -16,17 +16,19 @@ jest.mock('fs', () => require('memfs'));
 jest.mock('../lib/infrastructure/whatsapp-feed-factory');
 jest.mock('instagram-private-api');
 
-
 const DEFAULT_SYNC_COUNT = 3;
 const DEFAULT_SYNC_LIST = _.range(1, DEFAULT_SYNC_COUNT + 1).map(i => ({
   instagramAccount: `fakeInstagramAccount${i}`,
   whatsAppAccount: `fakeWhatsAppAccount${i}`,
   whatsAppGroup: `fakeWhatsAppGroup${i}`,
 }));
-const DEFAULT_TARGET_FEEDS = DEFAULT_SYNC_LIST.map(sync => new MediaFeedInfo({
-  account: sync.whatsAppAccount,
-  name: sync.whatsAppGroup,
-}));
+const DEFAULT_TARGET_FEEDS = DEFAULT_SYNC_LIST.map(
+  sync =>
+    new MediaFeedInfo({
+      account: sync.whatsAppAccount,
+      name: sync.whatsAppGroup,
+    }),
+);
 
 const DEFAULT_COMMAND_ARGS = {
   googleChromePath: '/path/to/Google/Chrome',
@@ -56,13 +58,13 @@ const credentialsDbInitializedFrom = (commandArgs, syncList) => {
 };
 
 const syncListFileInitializedFrom = (commandArgs, syncList) => {
-  const toSyncListLine = sync => `${sync.instagramAccount} ${sync.whatsAppAccount} ${sync.whatsAppGroup}`;
+  const toSyncListLine = sync =>
+    `${sync.instagramAccount} ${sync.whatsAppAccount} ${sync.whatsAppGroup}`;
   const fileContent = syncList.map(toSyncListLine).join('\n');
 
   fs.mkdirSync(path.dirname(commandArgs.syncListFile), { recursive: true });
   fs.writeFileSync(commandArgs.syncListFile, fileContent);
 };
-
 
 test('synchronize send posts for all instagram-whatsapp synchro configured in sync list file', async () => {
   // Given
@@ -78,6 +80,6 @@ test('synchronize send posts for all instagram-whatsapp synchro configured in sy
   // Then
   const hasExpectedNumberOfPosts = posts => posts.length === postsCount;
   const sentMediaPostsByTarget = DEFAULT_TARGET_FEEDS.map(WhatsAppFeedFactory.getSentMediaPosts);
-  expect(sentMediaPostsByTarget.length).toEqual(DEFAULT_SYNC_COUNT);
+  expect(sentMediaPostsByTarget).toHaveLength(DEFAULT_SYNC_COUNT);
   expect(sentMediaPostsByTarget).toSatisfyAll(hasExpectedNumberOfPosts);
 });

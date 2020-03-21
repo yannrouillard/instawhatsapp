@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
+    "plugin:sonarjs/recommended"
+  ],
+  "plugins": ["prettier", "jest"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "max-classes-per-file": "off",
+    "sonarjs/cognitive-complexity": ["error", 5]
+  }
+}

@@ -17,7 +17,6 @@ jest.mock('fs', () => require('memfs'));
 jest.mock('../lib/infrastructure/whatsapp-feed-factory');
 jest.mock('instagram-private-api');
 
-
 const DEFAULT_SYNCHRONIZE_OPTIONS = {
   instagramAccount: 'fakeAccount',
   whatsAppGroup: 'fakeWhatsAppGroup',
@@ -33,7 +32,7 @@ const TARGET_FEED_INFO = new MediaFeedInfo({
   name: DEFAULT_SYNCHRONIZE_OPTIONS.whatsAppGroup,
 });
 
-const CredentialsDbInitializedWith = (synchronizeOptions) => {
+const CredentialsDbInitializedWith = synchronizeOptions => {
   const credentialsDbFile = path.join(synchronizeOptions.whatsAppDataFolder, 'credentials.db');
   const credentialsDbContent = synchronizeOptions.instagramPassword
     ? {}
@@ -52,7 +51,6 @@ beforeEach(() => {
   instagramPrivateApiMock.reset();
   WhatsAppFeedFactory.reset();
 });
-
 
 test('synchronize finds and sends all Instagram posts to Whatsapp', async () => {
   // Given

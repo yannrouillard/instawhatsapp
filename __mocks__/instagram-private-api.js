@@ -32,7 +32,9 @@ const mediaFieldByType = {
 const alternateImageAndVideo = idx => (idx % 2 === 1 ? 'images' : 'videos');
 
 const buildFakeImageOrVideoMedia = ({ postId, mediaType, mediaIdx = 1, resCount = 1 }) => {
-  const buildUrl = resId => ({ url: `${FAKE_MEDIA_HOST}/post${postId}-${mediaType}${mediaIdx}-res${resId}` });
+  const buildUrl = resId => ({
+    url: `${FAKE_MEDIA_HOST}/post${postId}-${mediaType}${mediaIdx}-res${resId}`,
+  });
   return _.range(1, resCount + 1).map(buildUrl);
 };
 
@@ -78,12 +80,10 @@ const buildFakeInstagramPost = (postId, options = {}) => {
  * Public functions
  *************************************************************************** */
 
-const buildFakeInstagramPosts = (count, options) => (
-  _.range(count, 0).map(postId => buildFakeInstagramPost(postId, options))
-);
+const buildFakeInstagramPosts = (count, options) =>
+  _.range(count, 0).map(postId => buildFakeInstagramPost(postId, options));
 
-
-const configuredWith = (options) => {
+const configuredWith = options => {
   nock(FAKE_MEDIA_HOST)
     .persist()
     .get(MEDIA_PATH_RE)
