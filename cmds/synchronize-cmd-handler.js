@@ -28,7 +28,7 @@ const logMediaPostsFound = posts => console.log(`\t${posts.length} posts found t
 
 const logSendingMediaPost = (post) => {
   console.log(
-    `\tUploading post "${ellipsis(post.title, 40)}" published on ${moment
+    `\tUploading post "${ellipsis(post.title || '(no title)', 40)}" published on ${moment
       .unix(post.timestamp)
       .format('LLLL')}`,
   );

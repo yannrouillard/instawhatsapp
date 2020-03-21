@@ -45,15 +45,15 @@ const buildFakeCarouselMedia = ({ postId, mediaIdx, resCount }) => {
   return media;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const buildFakeInstagramPost = (postId, options = {}) => {
   const type = options.type || 'images';
   const carouselCount = options.carouselCount || 5;
   const resCount = options.multiResolutions ? _.random(2, 10) : 1;
+  const caption = !options.noTitle ? { text: `caption ${postId}` } : null;
 
   const fakePost = {
-    caption: {
-      text: `caption ${postId}`,
-    },
+    caption,
     media_type: mediaTypeIds[type],
     taken_at: postId,
     location: {
@@ -90,10 +90,17 @@ const configuredWith = (options) => {
     .reply(200, 'fakeContent');
 
   instagramApiMock.IgApiClient.mockImplementation(() => {
-    const { postsCount = 10, chunkSize = 0, multiResolutions, carouselCount, type } = options;
+    const {
+      postsCount = 10,
+      chunkSize = 0,
+      multiResolutions,
+      carouselCount,
+      type,
+      noTitle,
+    } = options;
 
     const posts = _.chunk(
-      buildFakeInstagramPosts(postsCount, { multiResolutions, carouselCount, type }),
+      buildFakeInstagramPosts(postsCount, { multiResolutions, carouselCount, type, noTitle }),
       chunkSize || postsCount,
     );
 
