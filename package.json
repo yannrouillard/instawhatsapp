@@ -21,6 +21,11 @@
     "util": "^0.12.2",
     "yargs": "^15.3.1"
   },
+  "resolutions": {
+    "chrome-launcher/mkdirp/minimist": "^1.2.5",
+    "puppeteer-core/extract-zip/mkdirp/minimist": "^1.2.5",
+    "terminal-image/@sindresorhus/jimp/mkdirp/minimist ": "^1.2.5"
+  },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
