@@ -82,7 +82,7 @@ const synchronizeHandler = async argv => {
     mediaFeedsSynchronizer.on('sendingMediaPost', logSendingMediaPost);
   }
 
-  const sinceAsTimestamp = argv.since ? moment(argv.since).unix() : 0;
+  const sinceAsTimestamp = argv.since ? moment(argv.since).unix() : undefined;
   const synchroOptions = {
     skip: argv.skip,
     max: argv.max,
