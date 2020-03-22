@@ -22,7 +22,7 @@ const mediaTypeIds = {
 
 const mediaFieldByType = {
   images: 'image_versions2',
-  videos: 'video_versions2',
+  videos: 'video_versions',
 };
 
 /* ****************************************************************************
@@ -35,15 +35,19 @@ const buildFakeImageOrVideoMedia = ({ postId, mediaType, mediaIdx = 1, resCount 
   const buildUrl = resId => ({
     url: `${FAKE_MEDIA_HOST}/post${postId}-${mediaType}${mediaIdx}-res${resId}`,
   });
-  return _.range(1, resCount + 1).map(buildUrl);
+  const medias = _.range(1, resCount + 1).map(buildUrl);
+  return mediaType === 'images' ? { candidates: medias } : medias;
 };
 
 const buildFakeCarouselMedia = ({ postId, mediaIdx, resCount }) => {
   const mediaType = alternateImageAndVideo(mediaIdx);
   const media = { media_type: mediaTypeIds[mediaType] };
-  media[mediaFieldByType[mediaType]] = {
-    candidates: buildFakeImageOrVideoMedia({ postId, mediaType, mediaIdx, resCount }),
-  };
+  media[mediaFieldByType[mediaType]] = buildFakeImageOrVideoMedia({
+    postId,
+    mediaType,
+    mediaIdx,
+    resCount,
+  });
   return media;
 };
 
@@ -68,9 +72,11 @@ const buildFakeInstagramPost = (postId, options = {}) => {
       buildFakeCarouselMedia({ postId, mediaIdx, resCount }),
     );
   } else {
-    fakePost[mediaFieldByType[type]] = {
-      candidates: buildFakeImageOrVideoMedia({ postId, mediaType: type, resCount }),
-    };
+    fakePost[mediaFieldByType[type]] = buildFakeImageOrVideoMedia({
+      postId,
+      mediaType: type,
+      resCount,
+    });
   }
 
   return fakePost;
