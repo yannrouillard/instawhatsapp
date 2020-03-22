@@ -1,10 +1,10 @@
 language: node_js
 node_js:
-  - "10.11"
+  - "12.10"
 
 env:
   global:
-    - YARN_VERSION="1.12.3"
+    - YARN_VERSION="1.19.0"
     - CC_TEST_REPORTER_ID=8fbd4a6d8ebe0a06c95166ff82b412fa7da0ddf72ea7f89a094edc40152325a0
 
 before_install:
