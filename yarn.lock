@@ -1457,10 +1457,10 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
-class-transformer@^0.2.0:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.2.3.tgz#598c92ca71dcca73f91ccb875d74a3847ccfa32d"
-  integrity sha512-qsP+0xoavpOlJHuYsQJsN58HXSl8Jvveo+T37rEvCEeRfMWoytAyR0Ua/YsFgpM6AZYZ/og2PJwArwzJl1aXtQ==
+class-transformer@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.3.1.tgz#ee681a5439ff2230fc57f5056412d3befa70d597"
+  integrity sha512-cKFwohpJbuMovS8xVLmn8N2AUbAuc8pVo4zEfsUVo8qgECOogns1WVk/FkOZoxhOPTyTYFckuoH+13FO+MQ8GA==
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -3260,17 +3260,17 @@ inquirer@7.1.0, inquirer@^7.0.0:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
-instagram-private-api@^1.39.1:
-  version "1.39.1"
-  resolved "https://registry.yarnpkg.com/instagram-private-api/-/instagram-private-api-1.39.1.tgz#42b938de1fc8cecebb0de19bfb22deac20edebf2"
-  integrity sha512-JI9zfGvH5EnJiy5WBayXlF4fDn/1LApvaoE0PkzI5L+s8gWwWjXMyEjnH3rOD/qPAipUbtFaBqtcv7ISkmVNuw==
+instagram-private-api@^1.42.0:
+  version "1.42.0"
+  resolved "https://registry.yarnpkg.com/instagram-private-api/-/instagram-private-api-1.42.0.tgz#376b0e71bbbe1c27bb37d4c71d334ffd304f3a24"
+  integrity sha512-N29Lbsc2b873dhhVD7VAzuzYqSTSlHI/MALIWHwDOL47s9GXA5hQ3UYdonnx9Ubd+aQI9oIY3VU9f+U6GpJxPg==
   dependencies:
     "@lifeomic/attempt" "^3.0.0"
     "@types/chance" "^1.0.2"
     "@types/request-promise" "^4.1.43"
     bluebird "^3.7.1"
     chance "^1.0.18"
-    class-transformer "^0.2.0"
+    class-transformer "^0.3.1"
     debug "^4.1.1"
     image-size "^0.7.3"
     json-bigint "^0.3.0"
