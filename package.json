@@ -9,7 +9,7 @@
     "chrono-node": "^1.3.5",
     "del": "^5.1.0",
     "download": "^7.1.0",
-    "instagram-private-api": "^1.39.1",
+    "instagram-private-api": "^1.45.2",
     "lodash": "^4.17.11",
     "loud-rejection": "^2.2.0",
     "make-dir": "^3.0.2",
