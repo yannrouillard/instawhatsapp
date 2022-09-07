@@ -13,7 +13,7 @@
     "lodash": "^4.17.21",
     "loud-rejection": "^2.2.0",
     "make-dir": "^3.0.2",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "puppeteer-core": "^1.8.0",
     "terminal-image": "^0.2.0",
     "text-ellipsis": "^1.0.3",
