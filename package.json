@@ -17,7 +17,7 @@
     "puppeteer-core": "^3.0.0",
     "terminal-image": "^0.2.0",
     "text-ellipsis": "^1.0.3",
-    "tmp-promise": "^2.0.2",
+    "tmp-promise": "^3.0.0",
     "util": "^0.12.2",
     "yargs": "^15.3.1"
   },
